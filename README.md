@@ -12,7 +12,7 @@
 * **The same hardening as Phase 1**, carried forward: NSG rules in both directions, Key Vault with purge protection and RBAC-based access control via an explicit role assignment.
 
 ## 🏗️ Architecture Diagram
-![Security Architecture](assets/diagrama_arquitectura.jpg)
+![Security Architecture](assets/diagrama_arquitectura.png)
 
 ## 🛡️ What's Actually Implemented
 * **OIDC federation:** `azure/login@v2` authenticates using `id-token: write` permissions — no `AZURE_CLIENT_SECRET` or equivalent stored in GitHub Secrets.
@@ -27,7 +27,7 @@
 * Resource Group, VNet, subnet, and the NSG-to-subnet association.
 
 ### 2. `providers.tf` — Trust Boundary
-![providers.tf Analysis](assets/provider.png)
+![providers.tf Analysis](assets/providers.png)
 * Declares the `azurerm` provider. Authentication itself happens via OIDC in the CI/CD pipeline, not via static credentials in this file.
 
 ### 3. `security.tf` — Hardening
