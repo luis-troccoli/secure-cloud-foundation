@@ -58,6 +58,13 @@ resource "azurerm_network_security_group" "foundation_nsg" {
 }
 
 # Azure Key Vault: centralized and encrypted secret storage, hardened.
+# checkov:skip=CKV2_AZURE_32: No Private Endpoint in this lab -- the CI/CD
+# pipeline runs on GitHub-hosted runners without private network
+# connectivity (no VPN/ExpressRoute/self-hosted runner in the VNet), so a
+# Private Endpoint would block Terraform's own access. Compensating
+# control: network_acls default-deny below + RBAC + purge protection.
+# Tracked as a real gap in the roadmap for a future phase with a
+# self-hosted runner or a VPN gateway into the VNet.
 resource "azurerm_key_vault" "foundation_kv" {
   name                = "kv-${var.project}-${var.environment}-01"
   location            = azurerm_resource_group.foundation.location
@@ -71,6 +78,21 @@ resource "azurerm_key_vault" "foundation_kv" {
 
   # RBAC-based access control (modern approach vs. legacy access_policy blocks)
   enable_rbac_authorization = true
+
+  # Public network access disabled. Terraform can still create and manage
+  # this vault (name, RBAC, network_acls, etc.) from a GitHub-hosted
+  # runner because those operations go through the Azure Resource Manager
+  # control plane, not through the vault's own data-plane endpoint. This
+  # only matters if something needs to read/write secrets directly against
+  # the vault's DNS endpoint -- which nothing in this lab does yet.
+  public_network_access_enabled = false
+
+  # Firewall: explicit default-deny, defense in depth even with public
+  # access already disabled above.
+  network_acls {
+    default_action = "Deny"
+    bypass         = "AzureServices"
+  }
 }
 
 # Grant the deploying identity (the OIDC-federated CI principal, or you
