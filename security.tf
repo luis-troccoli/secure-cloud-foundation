@@ -58,13 +58,7 @@ resource "azurerm_network_security_group" "foundation_nsg" {
 }
 
 # Azure Key Vault: centralized and encrypted secret storage, hardened.
-# checkov:skip=CKV2_AZURE_32: No Private Endpoint in this lab -- the CI/CD
-# pipeline runs on GitHub-hosted runners without private network
-# connectivity (no VPN/ExpressRoute/self-hosted runner in the VNet), so a
-# Private Endpoint would block Terraform's own access. Compensating
-# control: network_acls default-deny below + RBAC + purge protection.
-# Tracked as a real gap in the roadmap for a future phase with a
-# self-hosted runner or a VPN gateway into the VNet.
+#checkov:skip=CKV2_AZURE_32:No Private Endpoint in this lab -- the CI/CD pipeline runs on GitHub-hosted runners without private network connectivity (no VPN/ExpressRoute/self-hosted runner in the VNet), so a Private Endpoint would block Terraform's own access. Compensating control: network_acls default-deny + public_network_access_enabled=false + RBAC + purge protection. Tracked as a real gap in the roadmap for a future phase with a self-hosted runner or VPN gateway.
 resource "azurerm_key_vault" "foundation_kv" {
   name                = "kv-${var.project}-${var.environment}-01"
   location            = azurerm_resource_group.foundation.location
