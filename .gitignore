@@ -1,0 +1,32 @@
+# Local .terraform directories
+.terraform/
+
+# Terraform state files
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+
+# Secrets and local variables
+*.tfvars
+*.tfvars.json
+*.tfvars.example
+secret.tfvars
+
+# System files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Execution logs and crash files
+*.log
+crash.log
+crash.txt
+
+# Backup files
+*.bak
+*.old
+
+# Provider cache (if enabled)
+.terraformrc
+terraform.rc
